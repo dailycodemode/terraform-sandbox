@@ -12,17 +12,23 @@ phases:
 
   pre_build:
     commands:
-      - echo "Requested tag ${GIT_TAG}"
       - git remote -v
       - git status
       - echo "Pipeline commit ${CODEBUILD_RESOLVED_SOURCE_VERSION}"
+
       - |
-        if [ -n "${GIT_TAG}" ] && git ls-remote --exit-code --tags origin "refs/tags/${GIT_TAG}" >/dev/null 2>&1; then
+        if [ "${GIT_TAG}" != "." ]; then
           echo "Fetching tag ${GIT_TAG}"
           git fetch origin "refs/tags/${GIT_TAG}:refs/tags/${GIT_TAG}"
           git checkout "tags/${GIT_TAG}"
-        else
-          echo "Tag '${GIT_TAG}' not found; checking out branch ${GIT_BRANCH}"
+
+        elif [ "${GIT_COMMIT}" != "." ] && [ "${GIT_COMMIT}" != "${CODEBUILD_RESOLVED_SOURCE_VERSION}" ]; then
+          echo "Fetching commit ${GIT_COMMIT}"
+          git fetch origin "${GIT_COMMIT}"
+          git checkout "${GIT_COMMIT}"
+
+        elif [ "${GIT_BRANCH}" != "." ]; then
+          echo "Fetching branch ${GIT_BRANCH}"
           git fetch origin "refs/heads/${GIT_BRANCH}:refs/remotes/origin/${GIT_BRANCH}"
           git checkout -B "${GIT_BRANCH}" "origin/${GIT_BRANCH}"
         fi
