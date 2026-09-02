@@ -33,7 +33,9 @@ phases:
           git checkout -B "${GIT_BRANCH}" "origin/${GIT_BRANCH}"
         fi
 
-      - git rev-parse HEAD
+      - |
+        GIT_HEAD=$(git rev-parse HEAD)
+        echo "Checked out commit: ${GIT_HEAD}"
 
   build:
     commands:
