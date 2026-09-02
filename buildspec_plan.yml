@@ -8,6 +8,8 @@ phases:
   build:
     commands:
       - |
+        echo "GIT_TAG"
+        echo "$GIT_TAG"
         if [ -n "${GIT_TAG:-}" ]; then
           git fetch --no-tags origin "refs/tags/$GIT_TAG:refs/tags/$GIT_TAG"
           git checkout --detach "refs/tags/$GIT_TAG"
