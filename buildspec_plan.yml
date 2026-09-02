@@ -8,9 +8,9 @@ phases:
   build:
     commands:
       - |
-        if [ -n "${GIT_SHA:-}" ]; then
-          git fetch --no-tags origin "$GIT_SHA"
-          git checkout --detach "$GIT_SHA"
+        if [ -n "${GIT_TAG:-}" ]; then
+          git fetch --no-tags origin "refs/tags/$GIT_TAG:refs/tags/$GIT_TAG"
+          git checkout --detach "refs/tags/$GIT_TAG"
         fi
       - terraform init
       - terraform plan -out=tfplan
