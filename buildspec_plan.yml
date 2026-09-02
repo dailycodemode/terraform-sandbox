@@ -12,7 +12,7 @@ phases:
 
   pre_build:
     commands:
-      - echo "Requested tag: ${GIT_TAG}"
+      - echo "Requested tag ${GIT_TAG}"
       - git remote -v
       - git status
 
