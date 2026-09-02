@@ -13,10 +13,10 @@ phases:
       - |
         if [ -n "$GIT_TAG" ]; then
           echo "Checking out Git tag: $GIT_TAG"
-          # git fetch origin tag "$GIT_TAG" --no-tags || true
+          git fetch origin tag "$GIT_TAG" --no-tags || true
           git checkout "$GIT_TAG"
         fi
-        
+
       - terraform init
       - terraform plan -out=tfplan
 artifacts:
