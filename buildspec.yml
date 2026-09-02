@@ -1,0 +1,13 @@
+version: 0.2
+phases:
+  build:
+    commands:
+      - terraform -chdir=$SOURCE_PATH init -backend-config="bucket=$SOURCE_BUCKET"
+      - terraform -chdir=$TARGET_PATH init -backend-config="bucket=$TARGET_BUCKET"
+      # Perform the move
+      - |
+        terraform -chdir=$SOURCE_PATH state mv \
+          -state-out=../$TARGET_PATH/terraform.tfstate \
+          $SOURCE_ADDRESS $TARGET_ADDRESS
+      # Push changes back to target backend
+      - terraform -chdir=$TARGET_PATH init -force-copy

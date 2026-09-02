@@ -7,6 +7,11 @@ phases:
       - yum install -y terraform
   build:
     commands:
+      - |
+        if [ -n "${GIT_SHA:-}" ]; then
+          git fetch --no-tags origin "$GIT_SHA"
+          git checkout --detach "$GIT_SHA"
+        fi
       - terraform init
       - terraform plan -out=tfplan
 artifacts:
