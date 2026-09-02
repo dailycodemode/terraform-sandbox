@@ -9,14 +9,20 @@ phases:
     commands:
       - |
         echo "git tag: $GIT_TAG"
-        if [ -n "${GIT_TAG:-}" ]; then
+      - |
+        if [ -n "$GIT_TAG" ]; then
           echo "Checking out Git tag: $GIT_TAG"
-          rm -rf /tmp/terraform-sandbox-tag
-          git clone --depth 1 --branch "$GIT_TAG" \
-            "${GIT_REPO_URL:-https://github.com/dailycodemode/terraform-sandbox.git}" \
-            /tmp/terraform-sandbox-tag
-          cp -a /tmp/terraform-sandbox-tag/. .
+          git fetch origin tag "$GIT_TAG" --no-tags || true
+          git checkout "$GIT_TAG"
         fi
+        # if [ -n "${GIT_TAG:-}" ]; then
+        #   echo "Checking out Git tag: $GIT_TAG"
+        #   rm -rf /tmp/terraform-sandbox-tag
+        #   git clone --depth 1 --branch "$GIT_TAG" \
+        #     "${GIT_REPO_URL:-https://github.com/dailycodemode/terraform-sandbox.git}" \
+        #     /tmp/terraform-sandbox-tag
+        #   cp -a /tmp/terraform-sandbox-tag/. .
+        # fi
       - terraform init
       - terraform plan -out=tfplan
 artifacts:
