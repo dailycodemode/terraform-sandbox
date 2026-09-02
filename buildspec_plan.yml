@@ -15,12 +15,16 @@ phases:
       - echo "Requested tag ${GIT_TAG}"
       - git remote -v
       - git status
-
+      - echo "Pipeline commit ${CODEBUILD_RESOLVED_SOURCE_VERSION}"
       - |
-        if [ -n "${GIT_TAG}" ]; then
+        if [ -n "${GIT_TAG}" ] && git ls-remote --exit-code --tags origin "refs/tags/${GIT_TAG}" >/dev/null 2>&1; then
           echo "Fetching tag ${GIT_TAG}"
           git fetch origin "refs/tags/${GIT_TAG}:refs/tags/${GIT_TAG}"
           git checkout "tags/${GIT_TAG}"
+        else
+          echo "Tag '${GIT_TAG}' not found; checking out branch ${GIT_BRANCH}"
+          git fetch origin "refs/heads/${GIT_BRANCH}:refs/remotes/origin/${GIT_BRANCH}"
+          git checkout -B "${GIT_BRANCH}" "origin/${GIT_BRANCH}"
         fi
 
       - git rev-parse HEAD
