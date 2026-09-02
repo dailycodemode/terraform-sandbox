@@ -8,7 +8,7 @@ phases:
   build:
     commands:
       - |
-        echo 111111111111111
+        echo "111111111111111"
         if [ -n "$GIT_TAG" ]; then
           echo "Checking out Git tag: $GIT_TAG"
           git fetch origin tag "$GIT_TAG" --no-tags || true
