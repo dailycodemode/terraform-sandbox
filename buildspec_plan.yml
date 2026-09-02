@@ -1,25 +1,36 @@
 version: 0.2
+
+env:
+  git-credential-helper: yes
+
 phases:
   install:
     commands:
       - yum install -y yum-utils
       - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
       - yum install -y terraform
-  build:
+
+  pre_build:
     commands:
+      - echo "Requested tag: ${GIT_TAG}"
+      - git remote -v
+      - git status
+
       - |
-        echo "git tag: $GIT_TAG"
-        ls -al
-      - |
-        if [ -n "$GIT_TAG" ]; then
-          echo "Checking out Git tag: $GIT_TAG"
-          git fetch origin tag "$GIT_TAG" --no-tags || true
-          git checkout "$GIT_TAG"
+        if [ -n "${GIT_TAG}" ]; then
+          echo "Fetching tag ${GIT_TAG}"
+          git fetch origin "refs/tags/${GIT_TAG}:refs/tags/${GIT_TAG}"
+          git checkout "tags/${GIT_TAG}"
         fi
 
-      - terraform init
-      - terraform plan -out=tfplan
+      - git rev-parse HEAD
+
+  build:
+    commands:
+      - terraform init -input=false
+      - terraform validate
+      - terraform plan -input=false -out=tfplan
+
 artifacts:
   files:
-    - tfplan
     - "**/*"
